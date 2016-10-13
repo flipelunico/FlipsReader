@@ -30,6 +30,7 @@ import java.util.Map;
 public class FeedlyParser {
 
         private String CATEGORIES_URL = "http://cloud.feedly.com/v3/categories";
+        private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
         private String Token = "OAuth AzbvRrDhWdB0seGrkhh3g2dz5W941-2XMNPRO7vVhlR9mDrcHSgdiK7Z8zuoNY71IndDUEejb221HhNd4qooDfx4It1dooI4_8vqcjaOZE5JIsYoFtu-jhnBVW7ii3b-KYK2wmG8aCNwsiMeQXpEBTcxLN67f9DIRmubfGKvaRZ4rGty1XmFszpBr8oFc7g1287IOOmS1peMxk5iaPi4V7JpDosQ:feedlydev";
         private Context context;
 
@@ -95,87 +96,82 @@ public class FeedlyParser {
             };
 
 
-            /*
-            StringRequest stringRequest = new StringRequest(CATEGORIES_URL,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            String salida = response;
-                            Toast.makeText(context,"Respuesta OK",Toast.LENGTH_LONG).show();
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(context,error.getMessage(),Toast.LENGTH_LONG).show();
-                        }
-                    }) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<String, String>();
-                    headers.put("Authorization", Token);
-                    return headers;
-                }
-            };*/
-
             RequestQueue requestQueue = Volley.newRequestQueue(context);
             //requestQueue.add(stringRequest);
             requestQueue.add(jsonArrReq);
         }
 
-        private void ParseCategories(String JSONString){
+        public void get_subscriptions(){
 
-        try{
-            //JSONArray elements = new JSONArray (response);
-            JSONObject json=new JSONObject(JSONString);
-            JSONArray elements = json.getJSONArray("items");
+        final List<Subscription> subscriptions = new ArrayList<>();
 
-            Log.d("Flipelunico", "Elemenenti numero" +elements.length());
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET,
+                SUBSCRIPTIONS_URL, null, new Response.Listener<JSONArray>() {
 
-            for(int i = 0; i < elements.length(); i++){
-                JSONObject c = elements.getJSONObject(i);
-                // Storing each json item in variable
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("", response.toString());
+                try {
+                    // Parsing json array response
+                    // loop through each json object
 
-                String identifier = c.getString("id");
-                String title = c.getString("title");
-                String link = c.getString("originId");
-                String data = c.getString("published");
+                    for (int i = 0; i < response.length(); i++) {
 
+                        JSONObject person = (JSONObject) response.get(i);
 
-                JSONObject summaryObj= c.getJSONObject("summary");
-                String summary = summaryObj.getString("content");
+                        String id = person.getString("id");
+                        String title = person.getString("title");
+                        String website = person.getString("website");
+                        String updated = person.getString("updated");
+                        JSONObject categories = person.getJSONObject("categories");
 
-                /*JSONObject contentObj= c.getJSONObject("content");
-                String content = contentObj.getString("content");
+                        String category_id = categories.getString("id");
+                        String category_label = categories.getString("label");
 
-                JSONObject sourceObj= c.getJSONObject("origin");
-                String source = contentObj.getString("title");
+                        Subscription s = new Subscription();
+                        s.set_id(id);
+                        s.set_title(title);
+                        s.set_website(website);
+                        s.set_category_id(category_id);
+                        s.set_category_label(category_label);
+                        s.set_updated(updated);
 
+                        subscriptions.add(s);
 
-                if (summary.length()==0 && content.length()!=0) summary=content;
-                if (content.length()==0 && summary.length()!=0) content=summary;
-                */
-                String content = summary;
-
-                //String image=this.getFirstImage(content);
-                String image = "";
-
-                /*RssItem newItem = new RssItem();
-
-                newItem.setTitle(title);
-                newItem.parserSetContent("",content);
-                newItem.parserSetContent("",content);
-                newItem.parserSetPubDate(fecha);
+                    }
 
 
-                feedList.add(newItem);*/
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+
+                FeedlyDB.getInstance(context).syncSUBSCRIPTIONS(subscriptions);
+
+                //hidepDialog();
             }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Flipelunico", "Error: " + error.getMessage());
+                Toast.makeText(context,
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", Token);
+                return headers;
+            }
+        };
 
 
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //requestQueue.add(stringRequest);
+        requestQueue.add(jsonArrReq);
     }
 
 }
