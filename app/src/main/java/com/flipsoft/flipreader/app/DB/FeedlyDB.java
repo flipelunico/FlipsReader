@@ -79,7 +79,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
      * @return cursor con los registros
      */
     public Cursor getCATEGORIES() {
-        // Seleccionamos todas las filas de la tabla 'entrada'
+        // Seleccionamos todas las filas de la tabla 'categorias'
         return getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.CATEGORY_TABLE_NAME, null);
 
@@ -91,7 +91,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
      * @return cursor con los registros
      */
     public Cursor getSUBSCRIPTIONS() {
-        // Seleccionamos todas las filas de la tabla 'entrada'
+        // Seleccionamos todas las filas de la tabla 'subscripciones'
         return getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.SUBSCRIPTIONS_TABLE_NAME, null);
 
