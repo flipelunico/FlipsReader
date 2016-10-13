@@ -330,4 +330,62 @@ public class FeedlyDB extends SQLiteOpenHelper{
             );
         }
     }
+	
+	/**
+     * Procesa una lista de items para su almacenamiento local
+     * y sincronización.
+     *
+     * @param subscriptions lista de subscripciones
+     */
+    public void syncENTRIES(List<Entry> entries) {
+
+        /* Se guardan las entradas en memoria*/
+
+        HashMap<String, Entrie> entryMap = new HashMap<>();
+        for (Entry s : entries) {
+            entryMap.put(s.get_id(), s);
+        }
+
+        /*Obtener las entradas locales*/
+
+        Cursor c = getENTRIES();
+        assert c != null;
+
+
+        /*
+        #3  Comenzar a comparar las subscripciones
+        */
+        String id;
+
+        while (c.moveToNext()) {
+
+            id = c.getString(0);
+
+
+            Entry match = entryMap.get(id);
+
+            if (match != null) {
+                // Si se encuentra la entrada la sacamos de memoria para luego no insertarla y que de duplicado
+                entryMap.remove(id);
+            }
+        }
+        c.close();
+
+
+        /*
+        #4 Añadir entradas nuevas
+        */
+        for (Entry su : entries) {
+
+            insertENTRY(
+                    su.get_id(),
+                    su.get_title(),
+                    su.get_website(),
+                    su.get_category_id(),
+                    su.get_category_label(),
+                    su.get_updated()
+
+            );
+        }
+    }
 }

@@ -80,7 +80,7 @@ public static final String INT_TYPE = "INTEGER";
 		public static final String ORIGIN_HTMLURL = "ORIGIN_HTMLURL";
 		public static final String VISUAL_URL = "VISUAL_URL";
 		public static final String VISUAL_HEIGHT = "VISUAL_HEIGHT";
-		public static final String VISUAL_HEIGHT = "VISUAL_WIDTH";
+		public static final String VISUAL_WIDTH = "VISUAL_WIDTH";
 		public static final String UNREAD = "UNREAD";
 	
     }
@@ -102,6 +102,7 @@ public static final String INT_TYPE = "INTEGER";
 					ColumnsENTRIES.ORIGIN_HTMLURL + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_URL + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_HEIGHT + " " + STRING_TYPE  + "," +
+					ColumnsENTRIES.VISUAL_WIDTH + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.ORIGIN_UNREAD + " " + STRING_TYPE  +")"; 
 
 

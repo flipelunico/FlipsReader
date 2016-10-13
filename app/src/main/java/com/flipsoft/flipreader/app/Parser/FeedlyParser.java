@@ -31,6 +31,7 @@ public class FeedlyParser {
 
         private String CATEGORIES_URL = "http://cloud.feedly.com/v3/categories";
         private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
+		private String ENTRIES_URL = "http://cloud.feedly.com/v3/subscriptions";
         private String Token = "OAuth AzbvRrDhWdB0seGrkhh3g2dz5W941-2XMNPRO7vVhlR9mDrcHSgdiK7Z8zuoNY71IndDUEejb221HhNd4qooDfx4It1dooI4_8vqcjaOZE5JIsYoFtu-jhnBVW7ii3b-KYK2wmG8aCNwsiMeQXpEBTcxLN67f9DIRmubfGKvaRZ4rGty1XmFszpBr8oFc7g1287IOOmS1peMxk5iaPi4V7JpDosQ:feedlydev";
         private Context context;
 
@@ -173,5 +174,94 @@ public class FeedlyParser {
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
     }
+         
+		public void get_entries(){
 
+        final List<Entry> entries = new ArrayList<>();
+
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET,
+                ENTRIES_URL, null, new Response.Listener<JSONArray>() {
+
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("", response.toString());
+                try {
+                    // Parsing json array response
+                    // loop through each json object
+
+                    for (int i = 0; i < response.length(); i++) {
+
+                        JSONObject JSONEntry = (JSONObject) response.get(i);
+
+                        String id = JSONEntry.getString("id");
+                        String title = JSONEntry.getString("title");
+                        JSONObject content = JSONEntry.getJSONObject("content");
+						String content_content = JSONEntry.getString("content");
+						
+						JSONObject summary = JSONEntry.getJSONObject("summary");
+						String summary_content = JSONEntry.getString("content");
+						
+						String author = JSONEntry.getString("author");
+						String crawled = JSONEntry.getString("crawled");
+						String recrawled = JSONEntry.getString("crawled");
+						String published = JSONEntry.getString("published");
+						String updated = JSONEntry.getString("updated");
+						
+						//FIX: array object
+						JSONObject alternate = JSONEntry.getJSONObject("alternate");
+						String alternate_href = alternate.getString("href");
+						
+						JSONObject origin = JSONEntry.getJSONObject("origin");
+						String origin_title = origin.getString("title");
+						String origin_htmurl = origin.getString("htmlurl");
+						
+						JSONObject visual = JSONEntry.getJSONObject("visual");
+						String visual_url = visual.getString("url");
+						String visual_height = visual.getString("height");
+						String visual_width = visual.getString("width");
+						
+						String unread = JSONEntry.getString("unread");
+						
+                        Entry e = new Entry();
+                        e.set_id(id);
+                        e.set_title(title);
+                        //TODO: falta
+
+                        entries.add(s);
+
+                    }
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+
+                }
+
+                FeedlyDB.getInstance(context).syncENTRIES(entries);
+
+                //hidepDialog();
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Flipelunico", "Error: " + error.getMessage());
+                Toast.makeText(context,
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", Token);
+                return headers;
+            }
+        };
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //requestQueue.add(stringRequest);
+        requestQueue.add(jsonArrReq);
+    }
 }
