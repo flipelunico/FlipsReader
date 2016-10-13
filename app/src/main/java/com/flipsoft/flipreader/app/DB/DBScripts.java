@@ -85,7 +85,7 @@ public static final String INT_TYPE = "INTEGER";
 	
     }
 
-    // Comando CREATE para la tabla SUBSCRIPTIONS
+    // Comando CREATE para la tabla ENTRIES
     public static final String CREATE_ENTRIES =
             "CREATE TABLE " + ENTRIES_TABLE_NAME + "(" +
                     ColumnsENTRIES.ID + " " + STRING_TYPE + " primary key," +
