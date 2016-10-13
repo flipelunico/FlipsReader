@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.flipsoft.flipreader.app.Parser.Category;
+import com.flipsoft.flipreader.app.Parser.Subscription;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,14 +59,17 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Crear la tabla 'entrada'
+        // Crear la tabla 'CATEGORY'
         db.execSQL(DBScripts.CREATE_CATEGORY);
+        // Crear la tabla 'SUBSCRIPTIONS'
+        db.execSQL(DBScripts.CREATE_SUBSCRIPTIONS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Añade los cambios que se realizarán en el esquema
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.CATEGORY_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + DBScripts.SUBSCRIPTIONS_TABLE_NAME);
         onCreate(db);
     }
 
@@ -74,10 +78,22 @@ public class FeedlyDB extends SQLiteOpenHelper{
      *
      * @return cursor con los registros
      */
-    public Cursor obtenerEntradas() {
+    public Cursor getCATEGORIES() {
         // Seleccionamos todas las filas de la tabla 'entrada'
         return getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.CATEGORY_TABLE_NAME, null);
+
+    }
+
+    /**
+     * Obtiene todos los registros de la tabla SUBSCRIPTIONS
+     *
+     * @return cursor con los registros
+     */
+    public Cursor getSUBSCRIPTIONS() {
+        // Seleccionamos todas las filas de la tabla 'entrada'
+        return getWritableDatabase().rawQuery(
+                "select rowid _id, * from " + DBScripts.SUBSCRIPTIONS_TABLE_NAME, null);
 
     }
 
@@ -107,23 +123,88 @@ public class FeedlyDB extends SQLiteOpenHelper{
     }
 
     /**
-     * Modifica los valores de las columnas de una entrada
+     * Inserta un registro en la tabla SUBSCRIPTIONS
+     *
+     * @param ID     ID de la categoria
+     * @param TITLE  Label de la categoria
+     */
+    public void insertSUBSCRIPTIONS(
+            String ID,
+            String TITLE,
+            String WEBSITE,
+            String CATEGORY_ID,
+            String CATEGORY_LABEL,
+            String UPDATED){
+
+        ContentValues values = new ContentValues();
+        values.put(DBScripts.ColumnsSUBSCRIPTION.ID, ID);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.TITLE, TITLE);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.WEBSITE, WEBSITE);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.CATEGORY_ID, CATEGORY_ID);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.CATEGORY_LABEL, CATEGORY_LABEL);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.UPDATED, UPDATED);
+
+
+        try{
+            // Insertando el registro en la base de datos
+            getWritableDatabase().insertOrThrow(
+                    DBScripts.SUBSCRIPTIONS_TABLE_NAME,null, values
+            );
+        } catch (SQLiteConstraintException e){
+
+        }
+    }
+
+
+    /**
+     * Modifica los valores de las columnas de una categoria
      *
      * @param ID          identificador de la categoria
      * @param LABEL       label de la categoria
      */
     public void updateCATEGORY(String ID,
-                                  String LABEL) {
+                               String LABEL){
 
         ContentValues values = new ContentValues();
         values.put(DBScripts.ColumnsCATEGORY.ID, ID);
         values.put(DBScripts.ColumnsCATEGORY.LABEL, LABEL);
 
-        // Modificar entrada
+
+        // Modificar tabla SUBSCRIPTIONS
         getWritableDatabase().update(
                 DBScripts.CATEGORY_TABLE_NAME,
                 values,
                 DBScripts.ColumnsCATEGORY.ID + "=?",
+                new String[]{ID});
+
+    }
+
+    /**
+     * Modifica los valores de las columnas de una subscripcion
+     *
+     * @param ID          identificador de la subscripcion
+     * @param TITLE       label de la subscripcion
+     */
+    public void updateSUBSCRIPTIONS(String ID,
+                               String TITLE,
+                               String WEBSITE,
+                               String CATEGORY_ID,
+                               String CATEGORY_LABEL,
+                               String UPDATED){
+
+        ContentValues values = new ContentValues();
+        values.put(DBScripts.ColumnsSUBSCRIPTION.ID, ID);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.TITLE, TITLE);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.WEBSITE, WEBSITE);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.CATEGORY_ID, CATEGORY_ID);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.CATEGORY_LABEL, CATEGORY_LABEL);
+        values.put(DBScripts.ColumnsSUBSCRIPTION.UPDATED, UPDATED);
+
+        // Modificar tabla SUBSCRIPTIONS
+        getWritableDatabase().update(
+                DBScripts.SUBSCRIPTIONS_TABLE_NAME,
+                values,
+                DBScripts.ColumnsSUBSCRIPTION.ID + "=?",
                 new String[]{ID});
 
     }
@@ -145,7 +226,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         /*Obtener las entradas locales*/
 
-        Cursor c = obtenerEntradas();
+        Cursor c = getCATEGORIES();
         assert c != null;
 
 
@@ -186,6 +267,65 @@ public class FeedlyDB extends SQLiteOpenHelper{
             insertCATEGORY(
                     ca.get_id(),
                     ca.get_label()
+
+            );
+        }
+    }
+
+
+    /**
+     * Procesa una lista de items para su almacenamiento local
+     * y sincronización.
+     *
+     * @param subscriptions lista de subscripciones
+     */
+    public void syncSUBSCRIPTIONS(List<Subscription> subscriptions) {
+
+        /* Se guardan las categorias en memoria*/
+
+        HashMap<String, Subscription> entryMap = new HashMap<>();
+        for (Subscription s : subscriptions) {
+            entryMap.put(s.get_id(), s);
+        }
+
+        /*Obtener las entradas locales*/
+
+        Cursor c = getSUBSCRIPTIONS();
+        assert c != null;
+
+
+        /*
+        #3  Comenzar a comparar las subscripciones
+        */
+        String id;
+
+        while (c.moveToNext()) {
+
+            id = c.getString(0);
+
+
+            Subscription match = entryMap.get(id);
+
+            if (match != null) {
+                // Si se encuentra la entrada la sacamos de memoria para luego no insertarla y que de duplicado
+                entryMap.remove(id);
+            }
+        }
+        c.close();
+
+
+        /*
+        #4 Añadir entradas nuevas
+        */
+        for (Subscription su : subscriptions) {
+
+            insertSUBSCRIPTIONS(
+                    su.get_id(),
+                    su.get_title(),
+                    su.get_website(),
+                    su.get_category_id(),
+                    su.get_category_label(),
+                    su.get_updated()
 
             );
         }
