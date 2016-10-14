@@ -103,7 +103,7 @@ public static final String INT_TYPE = "INTEGER";
 					ColumnsENTRIES.VISUAL_URL + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_HEIGHT + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_WIDTH + " " + STRING_TYPE  + "," +
-					ColumnsENTRIES.ORIGIN_UNREAD + " " + STRING_TYPE  +")"; 
+					ColumnsENTRIES.UNREAD + " " + STRING_TYPE  +")";
 
 
 

@@ -31,7 +31,7 @@ public class FeedlyParser {
 
         private String CATEGORIES_URL = "http://cloud.feedly.com/v3/categories";
         private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
-		private String ENTRIES_URL = "http://cloud.feedly.com/v3/subscriptions";
+		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android";
         private String Token = "OAuth AzbvRrDhWdB0seGrkhh3g2dz5W941-2XMNPRO7vVhlR9mDrcHSgdiK7Z8zuoNY71IndDUEejb221HhNd4qooDfx4It1dooI4_8vqcjaOZE5JIsYoFtu-jhnBVW7ii3b-KYK2wmG8aCNwsiMeQXpEBTcxLN67f9DIRmubfGKvaRZ4rGty1XmFszpBr8oFc7g1287IOOmS1peMxk5iaPi4V7JpDosQ:feedlydev";
         private Context context;
 
@@ -48,7 +48,7 @@ public class FeedlyParser {
 
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.d("", response.toString());
+                    Log.d("Flipelunico", "Obteniendo Categorias");
                     try {
                         // Parsing json array response
                         // loop through each json object
@@ -71,6 +71,7 @@ public class FeedlyParser {
 
 
                     } catch (JSONException e) {
+                        Log.i("Flipelunico","Error!!!: " + e.toString());
                         e.printStackTrace();
 
                     }
@@ -104,14 +105,19 @@ public class FeedlyParser {
 
         public void get_subscriptions(){
 
-        final List<Subscription> subscriptions = new ArrayList<>();
+
+
+            final List<Subscription> subscriptions = new ArrayList<>();
 
         JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET,
                 SUBSCRIPTIONS_URL, null, new Response.Listener<JSONArray>() {
 
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("", response.toString());
+                Log.d("Flipelunico", "Obteniendo subscripciones");
+                String category_id = "";
+                String category_label = "";
+
                 try {
                     // Parsing json array response
                     // loop through each json object
@@ -123,11 +129,17 @@ public class FeedlyParser {
                         String id = person.getString("id");
                         String title = person.getString("title");
                         String website = person.getString("website");
-                        String updated = person.getString("updated");
-                        JSONObject categories = person.getJSONObject("categories");
 
-                        String category_id = categories.getString("id");
-                        String category_label = categories.getString("label");
+                        JSONArray JSONcategories = person.getJSONArray("categories");
+
+
+                        for (int z = 0; z < JSONcategories.length(); z++) {
+                            JSONObject categories = JSONcategories.getJSONObject(z);
+                            category_id = categories.getString("id");
+                            category_label = categories.getString("label");
+                        }
+
+                        String updated = person.getString("updated");
 
                         Subscription s = new Subscription();
                         s.set_id(id);
@@ -176,71 +188,88 @@ public class FeedlyParser {
     }
          
 		public void get_entries(){
-
+            Log.d("Flipelunico", "Obteniendo entradas");
         final List<Entry> entries = new ArrayList<>();
 
-        JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET,
-                ENTRIES_URL, null, new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonArrReq = new JsonObjectRequest(Request.Method.GET,
+                ENTRIES_URL, null, new Response.Listener<JSONObject>() {
 
             @Override
-            public void onResponse(JSONArray response) {
-                Log.d("", response.toString());
+            public void onResponse(JSONObject response) {
+                Log.d("Flipelunico", "Obteniendo entradas");
+
+                String id = "";
+                String title = "";
+                String content = "";
+                String summary = "";
+                String author = "";
+                String crawled = "";
+                String recrawled = "";
+                String published = "";
+                String updated = "";
+                String alternate_href = "";
+                String origin_title = "";
+                String origin_htmlurl = "";
+                String visual_url = "";
+                String visual_height = "";
+                String visual_width = "";
+                String unread = "";
+
+
+                id = getValue(response,"id");
+                updated =getValue(response,"updated");
+
+                JSONArray items = null;
+
                 try {
-                    // Parsing json array response
-                    // loop through each json object
-
-                    for (int i = 0; i < response.length(); i++) {
-
-                        JSONObject JSONEntry = (JSONObject) response.get(i);
-
-                        String id = JSONEntry.getString("id");
-                        String title = JSONEntry.getString("title");
-                        JSONObject content = JSONEntry.getJSONObject("content");
-						String content_content = JSONEntry.getString("content");
-						
-						JSONObject summary = JSONEntry.getJSONObject("summary");
-						String summary_content = JSONEntry.getString("content");
-						
-						String author = JSONEntry.getString("author");
-						String crawled = JSONEntry.getString("crawled");
-						String recrawled = JSONEntry.getString("crawled");
-						String published = JSONEntry.getString("published");
-						String updated = JSONEntry.getString("updated");
-						
-						//FIX: array object
-						JSONObject alternate = JSONEntry.getJSONObject("alternate");
-						String alternate_href = alternate.getString("href");
-						
-						JSONObject origin = JSONEntry.getJSONObject("origin");
-						String origin_title = origin.getString("title");
-						String origin_htmurl = origin.getString("htmlurl");
-						
-						JSONObject visual = JSONEntry.getJSONObject("visual");
-						String visual_url = visual.getString("url");
-						String visual_height = visual.getString("height");
-						String visual_width = visual.getString("width");
-						
-						String unread = JSONEntry.getString("unread");
-						
-                        Entry e = new Entry();
-                        e.set_id(id);
-                        e.set_title(title);
-                        //TODO: falta
-
-                        entries.add(s);
-
-                    }
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
+                    items = response.getJSONArray("items");
+                }catch (JSONException e){
+                    //
                 }
 
-                FeedlyDB.getInstance(context).syncENTRIES(entries);
+                for (int z = 0; z < items.length(); z++) {
 
+                    JSONObject item = null;
+                    try {
+                        item = items.getJSONObject(z);
+                    } catch (JSONException e){
+                        //
+                    }
+
+                    id = getValue(item,"id");
+                    title = getValue(item,"title");
+                    content = getValue(item,"content");
+                    summary = getValue(item,"summary");
+                    author = getValue(item,"author");
+
+                    //TODO: fatan gets...flojera
+
+                    Entry e = new Entry();
+                    e.set_id(id);
+                    e.set_title(title);
+                    e.set_content(content);
+                    e.set_summary(summary);
+                    e.set_author(author);
+                    e.set_crawled(crawled);
+                    e.set_recrawled(recrawled);
+                    e.set_published(published);
+                    e.set_updated(updated);
+                    e.set_alternate_href(alternate_href);
+                    e.set_origin_title(origin_title);
+                    e.set_origin_htmlurl(origin_htmlurl);
+                    e.set_visual_url(visual_url);
+                    e.set_visual_height(visual_height);
+                    e.set_visual_width(visual_width);
+                    e.set_unread(unread);
+
+                    entries.add(e);
+                }
+
+
+                FeedlyDB.getInstance(context).syncENTRIES(entries);
                 //hidepDialog();
+
+                Log.d("Flipelunico", "Obteniendo entradas fin");
             }
         }, new Response.ErrorListener() {
 
@@ -263,5 +292,17 @@ public class FeedlyParser {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
+    }
+
+
+    private String getValue(JSONObject object,String name) {
+        String resp;
+        try {
+            resp = object.getString(name);
+        } catch (JSONException e){
+            resp = "";
+        }
+        return resp;
+
     }
 }

@@ -1,21 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10dp">
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/headline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/headlines"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lista"
+        android:divider="@null"
+        android:background="#F1F5F8"
+        android:cacheColorHint="#00000000"
+        android:dividerHeight="1dp"
+        android:focusable="false"
+        android:visibility="gone"
+        android:padding="6dp"/>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/headline"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/article" />
-</RelativeLayout>
+</FrameLayout>

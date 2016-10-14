@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.flipsoft.flipreader.app.Parser.Category;
+import com.flipsoft.flipreader.app.Parser.Entry;
 import com.flipsoft.flipreader.app.Parser.Subscription;
 
 import java.util.HashMap;
@@ -63,6 +64,8 @@ public class FeedlyDB extends SQLiteOpenHelper{
         db.execSQL(DBScripts.CREATE_CATEGORY);
         // Crear la tabla 'SUBSCRIPTIONS'
         db.execSQL(DBScripts.CREATE_SUBSCRIPTIONS);
+        // Crear la tabla 'SUBSCRIPTIONS'
+        db.execSQL(DBScripts.CREATE_ENTRIES);
     }
 
     @Override
@@ -70,6 +73,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
         // Añade los cambios que se realizarán en el esquema
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.CATEGORY_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.SUBSCRIPTIONS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + DBScripts.ENTRIES_TABLE_NAME);
         onCreate(db);
     }
 
@@ -82,7 +86,6 @@ public class FeedlyDB extends SQLiteOpenHelper{
         // Seleccionamos todas las filas de la tabla 'categorias'
         return getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.CATEGORY_TABLE_NAME, null);
-
     }
 
     /**
@@ -94,7 +97,17 @@ public class FeedlyDB extends SQLiteOpenHelper{
         // Seleccionamos todas las filas de la tabla 'subscripciones'
         return getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.SUBSCRIPTIONS_TABLE_NAME, null);
+    }
 
+    /**
+     * Obtiene todos los registros de la tabla SUBSCRIPTIONS
+     *
+     * @return cursor con los registros
+     */
+    public Cursor getENTRIES() {
+        // Seleccionamos todas las filas de la tabla 'subscripciones'
+        return getWritableDatabase().rawQuery(
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME, null);
     }
 
     /**
@@ -155,6 +168,109 @@ public class FeedlyDB extends SQLiteOpenHelper{
         }
     }
 
+    /**
+     * Inserta un registro en la tabla SUBSCRIPTIONS
+     *
+     * @param id     ID de la categoria
+     * @param  title  Label de la categoria
+     */
+    public void insertENTRY(
+            String id,
+            String title,
+            String content,
+            String summary,
+            String author,
+            String crawled,
+            String recrawled,
+            String published,
+            String updated,
+            String alternate_href,
+            String origin_title,
+            String origin_htmlurl,
+            String visual_url,
+            String visual_height,
+            String visual_width,
+            String unread){
+
+        ContentValues values = new ContentValues();
+        values.put(DBScripts.ColumnsENTRIES.ID, id);
+        values.put(DBScripts.ColumnsENTRIES.TITLE, title);
+        values.put(DBScripts.ColumnsENTRIES.CONTENT, content);
+        values.put(DBScripts.ColumnsENTRIES.SUMMARY, summary);
+        values.put(DBScripts.ColumnsENTRIES.AUTHOR, author);
+        values.put(DBScripts.ColumnsENTRIES.CRAWLED, crawled);
+        values.put(DBScripts.ColumnsENTRIES.RECRAWLED, recrawled);
+        values.put(DBScripts.ColumnsENTRIES.PUBLISHED, published);
+        values.put(DBScripts.ColumnsENTRIES.UPDATED, updated);
+        values.put(DBScripts.ColumnsENTRIES.ALTERNATE_HREF, alternate_href);
+        values.put(DBScripts.ColumnsENTRIES.ORIGIN_TITLE, origin_title);
+        values.put(DBScripts.ColumnsENTRIES.ORIGIN_HTMLURL, origin_htmlurl);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_URL, visual_url);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_HEIGHT, visual_height);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_WIDTH, visual_width);
+        values.put(DBScripts.ColumnsENTRIES.UNREAD, unread);
+
+
+        try{
+            // Insertando el registro en la base de datos
+            getWritableDatabase().insertOrThrow(
+                    DBScripts.ENTRIES_TABLE_NAME,null, values
+            );
+        } catch (SQLiteConstraintException e){
+
+        }
+    }
+
+
+    /**
+     * Modifica los valores de las columnas de una categoria
+     * @param id          identificador de la categoria
+     * @param title       label de la categoria
+     */
+    public void updateENTRY(String id,
+                               String title,
+                               String content,
+                               String summary,
+                               String author,
+                               String crawled,
+                               String recrawled,
+                               String published,
+                               String updated,
+                               String alternate_href,
+                               String origin_title,
+                               String origin_htmlurl,
+                               String visual_url,
+                               String visual_height,
+                               String visual_width,
+                               String unread){
+
+        ContentValues values = new ContentValues();
+        values.put(DBScripts.ColumnsENTRIES.ID, id);
+        values.put(DBScripts.ColumnsENTRIES.TITLE, title);
+        values.put(DBScripts.ColumnsENTRIES.CONTENT, content);
+        values.put(DBScripts.ColumnsENTRIES.SUMMARY, summary);
+        values.put(DBScripts.ColumnsENTRIES.AUTHOR, author);
+        values.put(DBScripts.ColumnsENTRIES.CRAWLED, crawled);
+        values.put(DBScripts.ColumnsENTRIES.RECRAWLED, recrawled);
+        values.put(DBScripts.ColumnsENTRIES.PUBLISHED, published);
+        values.put(DBScripts.ColumnsENTRIES.UPDATED, updated);
+        values.put(DBScripts.ColumnsENTRIES.ALTERNATE_HREF, alternate_href);
+        values.put(DBScripts.ColumnsENTRIES.ORIGIN_TITLE, origin_title);
+        values.put(DBScripts.ColumnsENTRIES.ORIGIN_HTMLURL, origin_htmlurl);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_URL, visual_url);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_HEIGHT, visual_height);
+        values.put(DBScripts.ColumnsENTRIES.VISUAL_WIDTH, visual_width);
+        values.put(DBScripts.ColumnsENTRIES.UNREAD, unread);
+
+
+        // Modificar tabla SUBSCRIPTIONS
+        getWritableDatabase().update(
+                DBScripts.ENTRIES_TABLE_NAME,
+                values,
+                DBScripts.ColumnsENTRIES.ID + "=?",
+                new String[]{id});
+
+    }
 
     /**
      * Modifica los valores de las columnas de una categoria
@@ -335,13 +451,13 @@ public class FeedlyDB extends SQLiteOpenHelper{
      * Procesa una lista de items para su almacenamiento local
      * y sincronización.
      *
-     * @param subscriptions lista de subscripciones
+     * @param entries lista de subscripciones
      */
     public void syncENTRIES(List<Entry> entries) {
 
         /* Se guardan las entradas en memoria*/
 
-        HashMap<String, Entrie> entryMap = new HashMap<>();
+        HashMap<String, Entry> entryMap = new HashMap<>();
         for (Entry s : entries) {
             entryMap.put(s.get_id(), s);
         }
@@ -380,11 +496,20 @@ public class FeedlyDB extends SQLiteOpenHelper{
             insertENTRY(
                     su.get_id(),
                     su.get_title(),
-                    su.get_website(),
-                    su.get_category_id(),
-                    su.get_category_label(),
-                    su.get_updated()
-
+                    su.get_content(),
+                    su.get_summary(),
+                    su.get_author(),
+                    su.get_crawled(),
+                    su.get_recrawled(),
+                    su.get_published(),
+                    su.get_updated(),
+                    su.get_alternate_href(),
+                    su.get_origin_title(),
+                    su.get_origin_htmlurl(),
+                    su.get_visual_url(),
+                    su.get_visual_height(),
+                    su.get_visual_width(),
+                    su.get_unread()
             );
         }
     }
