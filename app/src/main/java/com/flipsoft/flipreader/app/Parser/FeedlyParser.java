@@ -241,6 +241,18 @@ public class FeedlyParser {
                     content = getValue(item,"content");
                     summary = getValue(item,"summary");
                     author = getValue(item,"author");
+                    published = getValue(item,"published");
+                    updated = getValue(item,"updated");
+
+
+                    JSONObject origin = null;
+                    try {
+                        origin = item.getJSONObject("origin");
+                    } catch (JSONException e){
+                        //
+                    }
+
+                    origin_title = getValue(origin,"title");
 
                     //TODO: fatan gets...flojera
 

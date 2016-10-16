@@ -12,6 +12,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.flipsoft.flipreader.app.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * Created by Flipelunico on 14-10-16.
  */
@@ -67,30 +72,62 @@ public class FeedCursorAdapter extends CursorAdapter {
         final ViewHolder vh = (ViewHolder) view.getTag();
 
 
-        vh.timestamp.setText("12:00");
+
         String v0 = cursor.getString(0);
         String v1 = cursor.getString(1);
         String v2 = cursor.getString(2);
         String v3 = cursor.getString(3);
         String v4 = cursor.getString(4);
-        String v5 = cursor.getString(5);
+        String v5 = cursor.getString(5); //Author
         String v6 = cursor.getString(6);
         String v7 = cursor.getString(7);
         String v8 = cursor.getString(8);
         String v9 = cursor.getString(9);
         String v10 = cursor.getString(10);
+        String v11 = cursor.getString(11);
+
+
+        if (v8 != "") {
+            Long fecha = Long.parseLong(v8);
+        }
+
+
+        Date pub_date = new Date(fecha);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+        String formattedDate = dateFormat.format(pub_date);
+
+        vh.timestamp.setText(formattedDate + " - " + v11);
 
         // Setear el texto al titulo
-        vh.titulo.setText(cursor.getString(1));
+        vh.titulo.setText(cursor.getString(2));
 
 
-        String descripcion = cursor.getString(3);
+        String content = cursor.getString(3);
+        String summary = cursor.getString(4);
+
+        String descripcion;
+
+        if (summary != ""){
+            descripcion = summary;
+        }else {
+            descripcion = content;
+        }
+
+
+        String noHTML1 = descripcion.replaceAll("\\<.*?>","");
+        String noHTML2 = noHTML1.replaceAll("&.*?;","");
+        String noHTML3 = noHTML2.replace("{\"content\":","");
+        descripcion = noHTML3;
 
         int ln =0;
         // Obtener acceso a la descripción y su longitud
         if (descripcion != null) {
             ln = cursor.getString(3).length();
         }
+
+
+
 
         // Acortar descripción a 77 caracteres
         if (ln >= 150)
