@@ -87,15 +87,18 @@ public class FeedCursorAdapter extends CursorAdapter {
         String v11 = cursor.getString(11);
 
 
+        Long fecha;
+        String formattedDate = "";
         if (v8 != "") {
-            Long fecha = Long.parseLong(v8);
+            fecha = Long.parseLong(v8);
+            Date pub_date = new Date(fecha);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+            formattedDate = dateFormat.format(pub_date);
         }
 
 
-        Date pub_date = new Date(fecha);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a");
-        String formattedDate = dateFormat.format(pub_date);
 
         vh.timestamp.setText(formattedDate + " - " + v11);
 
