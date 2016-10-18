@@ -33,10 +33,27 @@ public class FeedlyParser {
         private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
 		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android";
         private String Token = "OAuth AzbvRrDhWdB0seGrkhh3g2dz5W941-2XMNPRO7vVhlR9mDrcHSgdiK7Z8zuoNY71IndDUEejb221HhNd4qooDfx4It1dooI4_8vqcjaOZE5JIsYoFtu-jhnBVW7ii3b-KYK2wmG8aCNwsiMeQXpEBTcxLN67f9DIRmubfGKvaRZ4rGty1XmFszpBr8oFc7g1287IOOmS1peMxk5iaPi4V7JpDosQ:feedlydev";
-        private Context context;
+        private Context mContext;
+
+        /*
+        Instancia singleton
+        */
+        private static FeedlyParser singleton;
 
         public FeedlyParser(Context context){
-                this.context = context;
+                this.mContext = context;
+        }
+
+        /**
+         * Retorna la instancia unica del singleton
+         * @param context contexto donde se ejecutarán las peticiones
+         * @return Instancia
+         */
+        public static synchronized FeedlyParser getInstance(Context context) {
+            if (singleton == null) {
+                singleton = new FeedlyParser(context.getApplicationContext());
+            }
+            return singleton;
         }
 
         public void get_categories(){
@@ -76,7 +93,7 @@ public class FeedlyParser {
 
                     }
 
-                    FeedlyDB.getInstance(context).syncCATEGORIES(categories);
+                    FeedlyDB.getInstance(mContext).syncCATEGORIES(categories);
 
                     //hidepDialog();
                 }
@@ -85,7 +102,7 @@ public class FeedlyParser {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.d("Flipelunico", "Error: " + error.getMessage());
-                    Toast.makeText(context,
+                    Toast.makeText(mContext,
                             error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }) {
@@ -98,7 +115,7 @@ public class FeedlyParser {
             };
 
 
-            RequestQueue requestQueue = Volley.newRequestQueue(context);
+            RequestQueue requestQueue = Volley.newRequestQueue(mContext);
             //requestQueue.add(stringRequest);
             requestQueue.add(jsonArrReq);
         }
@@ -160,7 +177,7 @@ public class FeedlyParser {
 
                 }
 
-                FeedlyDB.getInstance(context).syncSUBSCRIPTIONS(subscriptions);
+                FeedlyDB.getInstance(mContext).syncSUBSCRIPTIONS(subscriptions);
 
                 //hidepDialog();
             }
@@ -169,7 +186,7 @@ public class FeedlyParser {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Flipelunico", "Error: " + error.getMessage());
-                Toast.makeText(context,
+                Toast.makeText(mContext,
                         error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -182,7 +199,7 @@ public class FeedlyParser {
         };
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
     }
@@ -278,7 +295,7 @@ public class FeedlyParser {
                 }
 
 
-                FeedlyDB.getInstance(context).syncENTRIES(entries);
+                FeedlyDB.getInstance(mContext).syncENTRIES(entries);
                 //hidepDialog();
 
                 Log.d("Flipelunico", "Obteniendo entradas fin");
@@ -288,7 +305,7 @@ public class FeedlyParser {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Flipelunico", "Error: " + error.getMessage());
-                Toast.makeText(context,
+                Toast.makeText(mContext,
                         error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -301,13 +318,12 @@ public class FeedlyParser {
         };
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
     }
 
-
-    private String getValue(JSONObject object,String name) {
+        private String getValue(JSONObject object,String name) {
         String resp;
         try {
             resp = object.getString(name);

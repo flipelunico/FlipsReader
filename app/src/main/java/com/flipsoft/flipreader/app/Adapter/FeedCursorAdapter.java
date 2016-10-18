@@ -72,8 +72,6 @@ public class FeedCursorAdapter extends CursorAdapter {
 
         final ViewHolder vh = (ViewHolder) view.getTag();
 
-
-
         String v0 = cursor.getString(0);
         String v1 = cursor.getString(1);
         String v2 = cursor.getString(2);
@@ -87,7 +85,6 @@ public class FeedCursorAdapter extends CursorAdapter {
         String v10 = cursor.getString(10);
         String v11 = cursor.getString(11);
 
-
         Long fecha;
         String formattedDate = "";
         if (v8 != "") {
@@ -98,17 +95,14 @@ public class FeedCursorAdapter extends CursorAdapter {
             formattedDate = dateFormat.format(pub_date);
         }
 
-
-
-
         vh.timestamp.setText(formattedDate + " - " + v11);
 
         // Setear el texto al titulo
-        vh.titulo.setText(cursor.getString(2));
+        vh.titulo.setText(v2);
+        vh.titulo.setTextSize(5 *  context.getResources().getDisplayMetrics().density);
 
-
-        String content = cursor.getString(3);
-        String summary = cursor.getString(4);
+        String content = v3;
+        String summary = v4;
 
         String descripcion;
 
@@ -118,25 +112,23 @@ public class FeedCursorAdapter extends CursorAdapter {
             descripcion = content;
         }
 
-
         String noHTML1 = descripcion.replaceAll("\\<.*?>","");
         String noHTML2 = noHTML1.replaceAll("&.*?;","");
-        String noHTML3 = noHTML2.replace("{\"content\":","");
+        String noHTML3 = noHTML2.replace("{\"content\":\"","");
         descripcion = noHTML3;
 
         int ln =0;
         // Obtener acceso a la descripción y su longitud
         if (descripcion != null) {
-            ln = cursor.getString(3).length();
+            ln = v3.length();
         }
 
-
-
-
         // Acortar descripción a 77 caracteres
-        if (ln >= 150)
-            vh.descripcion.setText(descripcion.substring(0, 150)+"...");
+        if (ln >= 77)
+            vh.descripcion.setText(descripcion.substring(0, 77)+"...");
         else vh.descripcion.setText(descripcion);
+
+        vh.descripcion.setTextSize(5 *  context.getResources().getDisplayMetrics().density);
 
         // Obtener URL de la imagen
         //String thumbnailUrl = cursor.getString(vh.imagenI);

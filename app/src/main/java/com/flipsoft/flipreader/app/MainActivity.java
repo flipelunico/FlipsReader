@@ -38,11 +38,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
 
-        FeedlyParser fp = new FeedlyParser(this);
-        fp.get_categories();
-        //fp.get_subscriptions();
-        fp.get_entries();
-
+        //FeedlyParser fp = new FeedlyParser(this);
+        FeedlyParser.getInstance(this).get_categories();
+        FeedlyParser.getInstance(this).get_entries();
 
         itemTitle = activityTitle = getTitle();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
