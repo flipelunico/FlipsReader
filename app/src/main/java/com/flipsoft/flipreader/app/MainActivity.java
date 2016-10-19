@@ -6,27 +6,35 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import android.content.res.Configuration;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 
 import com.flipsoft.flipreader.app.Adapter.DrawerListAdapter;
+import com.flipsoft.flipreader.app.DB.DBScripts;
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
 import com.flipsoft.flipreader.app.Parser.FeedlyParser;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     /*
      DECLARACIONES
      */
+    private Toolbar toolbar;
     private DrawerLayout drawerLayout;
-    private ListView drawerList;
     private ActionBarDrawerToggle drawerToggle;
+    private ListView ndList;
 
     private CharSequence activityTitle;
     private CharSequence itemTitle;
@@ -37,128 +45,115 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        //FeedlyParser fp = new FeedlyParser(this);
         FeedlyParser.getInstance(this).get_categories();
         FeedlyParser.getInstance(this).get_entries();
 
-        itemTitle = activityTitle = getTitle();
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList = (ListView) findViewById(R.id.left_drawer);
+        //Toolbar
 
-        // Setear una sombra sobre el contenido principal cuando el drawer se despliegue
-        //drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        toolbar = (Toolbar) findViewById(R.id.appbar);
+        setSupportActionBar(toolbar);
 
-        Cursor c = FeedlyDB.getInstance(this).getCATEGORIES();
-        DrawerListAdapter da = new DrawerListAdapter(this,c);
+        //Menu del Navigation Drawer
 
-        // Relacionar el adaptador y la escucha de la lista del drawer
-        drawerList.setAdapter(da);
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        ndList = (ListView)findViewById(R.id.navdrawerlist);
 
-        // Habilitar el icono de la app por si hay algún estilo que lo deshabilitó
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        final Cursor cCatergories = FeedlyDB.getInstance(this).getCATEGORIES();
 
-        // Crear ActionBarDrawerToggle para la apertura y cierre
+        DrawerListAdapter dladap = new DrawerListAdapter(this, cCatergories);
+
+        //ndList.setAdapter(ndMenuAdapter);
+        ndList.setAdapter(dladap);
+
+        ndList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                Fragment fragment = null;
+
+                switch (pos) {
+                    case 0:
+                        fragment = new FragmentFeeds();
+                        break;
+                    case 1:
+                        fragment = new Fragment1();
+                        break;
+                    default:
+                        fragment = new Fragment1();
+                }
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .commit();
+
+                ndList.setItemChecked(pos, true);
+
+                cCatergories.moveToPosition(pos);
+                getSupportActionBar().setTitle(cCatergories.getString(2));
+
+                drawerLayout.closeDrawer(Gravity.LEFT);
+            }
+        });
+
+        //Drawer Layout
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.color_primary_dark));
+
         drawerToggle = new ActionBarDrawerToggle(
-                this,
-                drawerLayout,
-                R.drawable.ic_drawer,
-                R.string.drawer_open,
-                R.string.drawer_close
-        ) {
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(itemTitle);
+                this, drawerLayout, R.string.openDrawer, R.string.closeDrawer){
 
-                /*Usa este método si vas a modificar la action bar
-                con cada fragmento
-                 */
-                //invalidateOptionsMenu();
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
             }
 
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(activityTitle);
-
-                /*Usa este método si vas a modificar la action bar
-                con cada fragmento
-                 */
-                //invalidateOptionsMenu();
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
             }
         };
-        //Seteamos la escucha
+
         drawerLayout.setDrawerListener(drawerToggle);
 
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            // Toma los eventos de selección del toggle aquí
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /* La escucha del ListView en el Drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    private void selectItem(int position) {
-        // Reemplazar el contenido del layout principal por un fragmento
-        ArticleFragment fragment = new ArticleFragment();
-        Bundle args = new Bundle();
-        args.putInt(ArticleFragment.ARG_ARTICLES_NUMBER, position);
-        fragment.setArguments(args);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-        // Se actualiza el item seleccionado y el título, después de cerrar el drawer
-        drawerList.setItemChecked(position, true);
-        //TODO:hay que hacer algo
-        //setTitle(tagTitles[position]);
-        drawerLayout.closeDrawer(drawerList);
-    }
-
-    /* Método auxiliar para setear el titulo de la action bar */
-    @Override
-    public void setTitle(CharSequence title) {
-        itemTitle = title;
-        getActionBar().setTitle(itemTitle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sincronizar el estado del drawer
         drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Cambiar las configuraciones del drawer si hubo modificaciones
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
 
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

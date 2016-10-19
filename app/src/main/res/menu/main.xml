@@ -1,4 +1,10 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/sync_feedly"
+        android:icon="@drawable/cloud_sync"
+        android:title="@string/action_sync"
+        android:showAsAction="ifRoom"/>
+    <item android:id="@+id/settings"
+        android:icon="@drawable/cloud_sync"
+        android:title="@string/action_settings" />
 </menu>

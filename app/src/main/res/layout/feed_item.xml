@@ -10,7 +10,6 @@
         android:layout_height="50px"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:background="@color/colorPrimaryDark"
         android:scaleType="centerCrop"/>
 
     <LinearLayout

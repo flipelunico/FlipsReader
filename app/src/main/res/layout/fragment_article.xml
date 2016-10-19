@@ -7,13 +7,12 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lista"
+        android:id="@android:id/list"
         android:divider="@null"
         android:background="#F1F5F8"
         android:cacheColorHint="#00000000"
         android:dividerHeight="1dp"
         android:focusable="false"
-        android:visibility="gone"
         android:padding="6dp"/>
 
 </FrameLayout>
