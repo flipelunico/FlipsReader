@@ -259,8 +259,6 @@ public class FeedlyParser {
                     summary = getValue(item,"summary");
                     author = getValue(item,"author");
                     published = getValue(item,"published");
-                    updated = getValue(item,"updated");
-
 
                     JSONObject origin = null;
                     try {

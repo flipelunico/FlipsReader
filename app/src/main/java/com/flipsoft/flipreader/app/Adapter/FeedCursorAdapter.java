@@ -60,7 +60,6 @@ public class FeedCursorAdapter extends CursorAdapter {
         // Almacenar referencias
         vh.titulo = (TextView) view.findViewById(R.id.item_titulo);
         vh.descripcion = (TextView) view.findViewById(R.id.item_contenido);
-        vh.imagen = (NetworkImageView) view.findViewById(R.id.item_icono);
         vh.timestamp = (TextView) view.findViewById(R.id.item_timestamp);
 
         view.setTag(vh);
@@ -85,13 +84,18 @@ public class FeedCursorAdapter extends CursorAdapter {
         String v10 = cursor.getString(10);
         String v11 = cursor.getString(11);
 
+
+        //TODO: sacar esto el error es de la bd
+        if (v8.length() == 0){
+            v8 = "1111111111111";
+        }
         Long fecha;
         String formattedDate = "";
         if (v8 != "") {
             fecha = Long.parseLong(v8);
             Date pub_date = new Date(fecha);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm");
             formattedDate = dateFormat.format(pub_date);
         }
 
@@ -99,7 +103,7 @@ public class FeedCursorAdapter extends CursorAdapter {
 
         // Setear el texto al titulo
         vh.titulo.setText(v2);
-        vh.titulo.setTextSize(5 *  context.getResources().getDisplayMetrics().density);
+        //vh.titulo.setTextSize(4 *  context.getResources().getDisplayMetrics().density);
 
         String content = v3;
         String summary = v4;
@@ -115,7 +119,8 @@ public class FeedCursorAdapter extends CursorAdapter {
         String noHTML1 = descripcion.replaceAll("\\<.*?>","");
         String noHTML2 = noHTML1.replaceAll("&.*?;","");
         String noHTML3 = noHTML2.replace("{\"content\":\"","");
-        descripcion = noHTML3;
+        String noHTML4 = noHTML3.replaceAll("\\\\n","");
+        descripcion = noHTML4;
 
         int ln =0;
         // Obtener acceso a la descripción y su longitud
@@ -123,12 +128,12 @@ public class FeedCursorAdapter extends CursorAdapter {
             ln = v3.length();
         }
 
-        // Acortar descripción a 77 caracteres
-        if (ln >= 77)
-            vh.descripcion.setText(descripcion.substring(0, 77)+"...");
+        // Acortar descripción a 110 caracteres
+        if (ln >= 110)
+            vh.descripcion.setText(descripcion.substring(0, 110)+"...");
         else vh.descripcion.setText(descripcion);
 
-        vh.descripcion.setTextSize(5 *  context.getResources().getDisplayMetrics().density);
+        //vh.descripcion.setTextSize(4 *  context.getResources().getDisplayMetrics().density);
 
         // Obtener URL de la imagen
         //String thumbnailUrl = cursor.getString(vh.imagenI);

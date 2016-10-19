@@ -39,7 +39,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
     /*
     Versión actual de la base de datos
      */
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
 
     private FeedlyDB(Context context) {
