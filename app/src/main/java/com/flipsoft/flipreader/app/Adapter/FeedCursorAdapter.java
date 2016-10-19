@@ -2,21 +2,21 @@ package com.flipsoft.flipreader.app.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.flipsoft.flipreader.app.Imageutils.ImageLoader;
 import com.flipsoft.flipreader.app.R;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+
 
 /**
  * Created by Flipelunico on 14-10-16.
@@ -28,7 +28,8 @@ public class FeedCursorAdapter extends CursorAdapter {
     Etiqueta de Depuración
      */
     private static final String TAG = FeedCursorAdapter.class.getSimpleName();
-
+    private ImageLoader imgLoader;
+    private Context mContext;
     /**
      * View holder para evitar multiples llamadas de findViewById()
      */
@@ -36,7 +37,8 @@ public class FeedCursorAdapter extends CursorAdapter {
         TextView timestamp;
         TextView titulo;
         TextView descripcion;
-        NetworkImageView imagen;
+        //NetworkImageView imagen;
+        ImageView favicon;
 
         int tituloI;
         int descripcionI;
@@ -47,7 +49,8 @@ public class FeedCursorAdapter extends CursorAdapter {
 
     public FeedCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
-
+        this.mContext = context;
+        imgLoader = new ImageLoader(mContext);
     }
 
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -61,7 +64,7 @@ public class FeedCursorAdapter extends CursorAdapter {
         vh.titulo = (TextView) view.findViewById(R.id.item_titulo);
         vh.descripcion = (TextView) view.findViewById(R.id.item_contenido);
         vh.timestamp = (TextView) view.findViewById(R.id.item_timestamp);
-
+        vh.favicon = (ImageView)  view.findViewById(R.id.item_favicon);
         view.setTag(vh);
 
         return view;
@@ -83,7 +86,11 @@ public class FeedCursorAdapter extends CursorAdapter {
         String v9 = cursor.getString(9);
         String v10 = cursor.getString(10);
         String v11 = cursor.getString(11);
-
+        String v12 = cursor.getString(12);
+        String v13 = cursor.getString(13);
+        String v14 = cursor.getString(14);
+        String v15 = cursor.getString(15);
+        String v16 = cursor.getString(16);
 
         //TODO: sacar esto el error es de la bd
         if (v8.length() == 0){
@@ -146,5 +153,8 @@ public class FeedCursorAdapter extends CursorAdapter {
         // Volcar datos en el image view
         //vh.imagen.setImageUrl(thumbnailUrl, imageLoader);
 
+        String url_favicon = "http://www.google.com/s2/favicons?domain_url=" + v12;
+        Log.i("Flipelunico","URL FAVICON: " + url_favicon);
+        imgLoader.DisplayImage(url_favicon, vh.favicon);
     }
 }

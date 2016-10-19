@@ -268,6 +268,7 @@ public class FeedlyParser {
                     }
 
                     origin_title = getValue(origin,"title");
+                    origin_htmlurl = getValue(origin,"htmlUrl");
 
                     //TODO: fatan gets...flojera
 
