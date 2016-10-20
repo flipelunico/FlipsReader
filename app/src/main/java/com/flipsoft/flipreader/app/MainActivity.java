@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
@@ -18,13 +19,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.flipsoft.flipreader.app.Adapter.FeedCursorAdapter;
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
 import com.flipsoft.flipreader.app.Parser.FeedlyParser;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener, SlidingPaneLayout.PanelSlideListener{
 
     /*
      DECLARACIONES
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String[] pageTitle = {"Fragment 1", "Fragment 2", "Fragment 3"};
     private ListView feedList;
     private SlidingPaneLayout mPanes;
-    private static final int PARALLAX_SIZE = 10;
+    private static final int PARALLAX_SIZE = 5;
     /**
      * Activity title
      */
@@ -53,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FeedlyParser.getInstance(this).get_categories();
         FeedlyParser.getInstance(this).get_entries();
-        
-        //viewPager = (ViewPager)findViewById(R.id.view_pager);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -75,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // SlidingPaneLayout customization
         mPanes = (SlidingPaneLayout) findViewById(R.id.slidingPane);
         mPanes.setParallaxDistance(PARALLAX_SIZE);
+        mPanes.setPanelSlideListener(this);
         mPanes.openPane();
+
 
 
         feedList = (ListView) findViewById(R.id.feedList);
@@ -111,21 +114,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //mCurrentTitle = mListItems[position];
         closePane();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, Fragment1.newInstance(position))
-                .commit();
+
+        DesActivity newDesActivity = new DesActivity();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, newDesActivity);
+        transaction.addToBackStack(null);
+        transaction.commit();
 
     }
+
+
 
     private void openPane() {
         mPanes.openPane();
         getSupportActionBar().setTitle(mTitle);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     private void closePane() {
         mPanes.closePane();
         getSupportActionBar().setTitle(mCurrentTitle);
+
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     @Override
@@ -136,5 +146,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+        //Toast.makeText(this,"Panel Slide",Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onPanelOpened(View panel) {
+        //Toast.makeText(this,"Panel Abierto",Toast.LENGTH_SHORT);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
+    @Override
+    public void onPanelClosed(View panel) {
+        //Toast.makeText(this,"Panel Cerrado",Toast.LENGTH_SHORT);
+
     }
 }
