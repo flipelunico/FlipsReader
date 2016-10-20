@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.Glide;
 import com.flipsoft.flipreader.app.Imageutils.ImageLoader;
 import com.flipsoft.flipreader.app.R;
 
@@ -28,8 +29,10 @@ public class FeedCursorAdapter extends CursorAdapter {
     Etiqueta de Depuración
      */
     private static final String TAG = FeedCursorAdapter.class.getSimpleName();
-    private ImageLoader imgLoader;
+    //private ImageLoader imgLoader;
     private Context mContext;
+    private LayoutInflater inflater;
+
     /**
      * View holder para evitar multiples llamadas de findViewById()
      */
@@ -50,10 +53,11 @@ public class FeedCursorAdapter extends CursorAdapter {
     public FeedCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.mContext = context;
-        imgLoader = new ImageLoader(mContext);
+        inflater = LayoutInflater.from(context);
     }
 
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        //imgLoader = new ImageLoader(mContext);
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View view = inflater.inflate(R.layout.feed_item, null, false);
@@ -69,6 +73,8 @@ public class FeedCursorAdapter extends CursorAdapter {
 
         return view;
     }
+
+
 
     public void bindView(View view, Context context, Cursor cursor) {
 
@@ -142,19 +148,14 @@ public class FeedCursorAdapter extends CursorAdapter {
 
         //vh.descripcion.setTextSize(4 *  context.getResources().getDisplayMetrics().density);
 
-        // Obtener URL de la imagen
-        //String thumbnailUrl = cursor.getString(vh.imagenI);
-
-
-        //Log.i("Flipelunico","thumburl: " + thumbnailUrl);
-        // Obtener instancia del ImageLoader
-        //ImageLoader imageLoader = RedSingleton.getInstance(context).getImageLoader();
-
-        // Volcar datos en el image view
-        //vh.imagen.setImageUrl(thumbnailUrl, imageLoader);
-
         String url_favicon = "http://www.google.com/s2/favicons?domain_url=" + v12;
-        Log.i("Flipelunico","URL FAVICON: " + url_favicon);
-        imgLoader.DisplayImage(url_favicon, vh.favicon);
+
+        //imgLoader.DisplayImage(url_favicon, vh.favicon);
+
+        Glide
+                .with(context)
+                .load(url_favicon)
+                .into(vh.favicon);
+
     }
 }
