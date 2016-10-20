@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 
 import com.bumptech.glide.Glide;
-import com.flipsoft.flipreader.app.Imageutils.ImageLoader;
 import com.flipsoft.flipreader.app.R;
 
 import java.text.SimpleDateFormat;

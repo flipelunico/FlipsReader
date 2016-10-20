@@ -5,41 +5,46 @@ package com.flipsoft.flipreader.app;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.content.res.Configuration;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 
-import com.flipsoft.flipreader.app.Adapter.DrawerListAdapter;
+import com.flipsoft.flipreader.app.Adapter.FeedCursorAdapter;
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
-import com.flipsoft.flipreader.app.Parser.FeedlyParser;
 
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener{
 
     /*
      DECLARACIONES
      */
-    private ViewPager viewPager;
     private DrawerLayout drawer;
     private TabLayout tabLayout;
     private String[] pageTitle = {"Fragment 1", "Fragment 2", "Fragment 3"};
+    private ListView feedList;
+    private SlidingPaneLayout mPanes;
+    private static final int PARALLAX_SIZE = 10;
+    /**
+     * Activity title
+     */
+    private CharSequence mTitle;
+
+    /**
+     * Current title depending on the selected animal
+     */
+    private CharSequence mCurrentTitle;
 
 
     @Override
@@ -47,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewPager = (ViewPager)findViewById(R.id.view_pager);
+        //viewPager = (ViewPager)findViewById(R.id.view_pager);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -65,13 +70,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
 
-        //set viewpager adapter
-        ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
+        // SlidingPaneLayout customization
+        mPanes = (SlidingPaneLayout) findViewById(R.id.slidingPane);
+        mPanes.setParallaxDistance(PARALLAX_SIZE);
+        mPanes.openPane();
 
-        //change Tab selection when swipe ViewPager
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
+        feedList = (ListView) findViewById(R.id.feedList);
+        feedList.setOnItemClickListener(this);
     }
 
     @Override
@@ -79,11 +85,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.fr1) {
-            viewPager.setCurrentItem(0);
+            Cursor c = FeedlyDB.getInstance(this).getENTRIES();
+            FeedCursorAdapter feedCA = new FeedCursorAdapter(this,c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            feedList.setAdapter(feedCA);
+            mPanes.openPane();
         } else if (id == R.id.fr2) {
-            viewPager.setCurrentItem(1);
+
         } else if (id == R.id.fr3) {
-            viewPager.setCurrentItem(2);
+
         } else if (id == R.id.go) {
             Intent intent = new Intent(this, DesActivity.class);
             intent.putExtra("string", "Go to other Activity by NavigationView item cliked!");
@@ -94,6 +103,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //mCurrentTitle = mListItems[position];
+        closePane();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, Fragment1.newInstance(position))
+                .commit();
+
+    }
+
+    private void openPane() {
+        mPanes.openPane();
+        getSupportActionBar().setTitle(mTitle);
+    }
+
+    private void closePane() {
+        mPanes.closePane();
+        getSupportActionBar().setTitle(mCurrentTitle);
     }
 
     @Override

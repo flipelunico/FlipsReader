@@ -11,13 +11,14 @@ import android.widget.SimpleCursorAdapter;
 
 import com.flipsoft.flipreader.app.Adapter.FeedCursorAdapter;
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
-import com.flipsoft.flipreader.app.Imageutils.ImageLoader;
 
 /**
  * Created by Flipelunico on 19-10-16.
  */
 
 public class FragmentFeeds extends ListFragment {
+
+
 
 
     @Override
