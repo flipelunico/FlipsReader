@@ -21,8 +21,7 @@ import android.widget.ListView;
 
 import com.flipsoft.flipreader.app.Adapter.FeedCursorAdapter;
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
-
-
+import com.flipsoft.flipreader.app.Parser.FeedlyParser;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener{
@@ -52,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FeedlyParser.getInstance(this).get_categories();
+        FeedlyParser.getInstance(this).get_entries();
+        
         //viewPager = (ViewPager)findViewById(R.id.view_pager);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
