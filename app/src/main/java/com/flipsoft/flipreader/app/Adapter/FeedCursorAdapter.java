@@ -37,6 +37,7 @@ public class FeedCursorAdapter extends CursorAdapter {
      */
     static class ViewHolder {
         TextView timestamp;
+        TextView page;
         TextView titulo;
         TextView descripcion;
         //NetworkImageView imagen;
@@ -67,6 +68,7 @@ public class FeedCursorAdapter extends CursorAdapter {
         vh.titulo = (TextView) view.findViewById(R.id.item_titulo);
         vh.descripcion = (TextView) view.findViewById(R.id.item_contenido);
         vh.timestamp = (TextView) view.findViewById(R.id.item_timestamp);
+        vh.page = (TextView) view.findViewById(R.id.item_page);
         vh.favicon = (ImageView)  view.findViewById(R.id.item_favicon);
         view.setTag(vh);
 
@@ -111,7 +113,8 @@ public class FeedCursorAdapter extends CursorAdapter {
             formattedDate = dateFormat.format(pub_date);
         }
 
-        vh.timestamp.setText(formattedDate + " - " + v11);
+        vh.timestamp.setText(" · " + formattedDate );
+        vh.page.setText(v11);
 
         // Setear el texto al titulo
         vh.titulo.setText(v2);

@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <TextView
-        android:text="TextView"
+
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        tools:text="Prueba FEED" />
-</LinearLayout>
+        android:padding= "30dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="5dp"
+        android:id="@+id/feed_title"
+        android:text="Titulo del Feed"
+        android:textStyle="normal|bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:id="@+id/feed_author"
+            android:text="Xatakaandroid by Cosmos"
+            android:textStyle="normal|bold|italic"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding= "30dp"
+            android:id="@+id/feed_content"
+            android:text="Contenido"
+            android:textStyle="normal|bold" />
+    </LinearLayout>
+    </ScrollView>
+

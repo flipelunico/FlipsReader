@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private DrawerLayout drawer;
     private TabLayout tabLayout;
-    private String[] pageTitle = {"Fragment 1", "Fragment 2", "Fragment 3"};
+    //private String[] pageTitle = {"Fragment 1", "Fragment 2", "Fragment 3"};
     private ListView feedList;
     private SlidingPaneLayout mPanes;
     private static final int PARALLAX_SIZE = 5;

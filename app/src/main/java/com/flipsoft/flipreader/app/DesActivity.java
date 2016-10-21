@@ -1,5 +1,6 @@
 package com.flipsoft.flipreader.app;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.flipsoft.flipreader.app.DB.FeedlyDB;
+
 public class DesActivity extends Fragment{
     private ViewPager mPager;
 
@@ -24,7 +27,8 @@ public class DesActivity extends Fragment{
         View view = inflater.inflate(R.layout.activity_des, container, false);
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) view.findViewById(R.id.viewpagerContainer);
-        mPagerAdapter = new ViewPagerAdapter(getFragmentManager());
+        Cursor c = FeedlyDB.getInstance(getContext()).getENTRIES();
+        mPagerAdapter = new ViewPagerAdapter(getContext(),getFragmentManager(),c);
         mPager.setAdapter(mPagerAdapter);
 
         return view;
