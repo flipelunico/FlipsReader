@@ -54,6 +54,7 @@ public class MyTagHandler implements Html.TagHandler
     @Override
     public void handleTag(final boolean opening, final String tag, final Editable output, final XMLReader xmlReader)
     {
+        Log.i("Flipelunico", "opening: " + opening + " tag: " + tag );
         if (UL_TAG.equalsIgnoreCase(tag))
         {
             if (opening)
@@ -89,7 +90,7 @@ public class MyTagHandler implements Html.TagHandler
         }
         else
         {
-            Log.d("TagHandler", "Found an unsupported tag " + tag);
+            //Log.d("TagHandler", "Found an unsupported tag " + tag);
         }
     }
 

@@ -18,6 +18,8 @@ public class RssTagHandler implements TagHandler{
     boolean first= true;
     String parent=null;
     int index=1;
+
+
     @Override
     public void handleTag(boolean opening, String tag, Editable output,
                           XMLReader xmlReader) {

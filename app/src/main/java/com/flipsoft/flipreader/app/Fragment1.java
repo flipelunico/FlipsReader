@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.flipsoft.flipreader.app.Parser.CustomTagHandler;
 import com.flipsoft.flipreader.app.Parser.MyTagHandler;
 import com.flipsoft.flipreader.app.Parser.RssTagHandler;
 import com.flipsoft.flipreader.app.Parser.URLImageParser;
@@ -56,7 +57,7 @@ public class Fragment1 extends Fragment {
             String textHTML2 = textHTML.replaceAll("\\\\","");
             //feed_content.setText(Html.fromHtml(textHTML));
             Log.i("Flipelunico","HTML : " + textHTML2);
-            feed_content.setText(Html.fromHtml(textHTML2, new URLImageParser(feed_content, getContext()), new MyTagHandler()));
+            feed_content.setText(Html.fromHtml(textHTML2, new URLImageParser(feed_content, getContext()), new CustomTagHandler()));
             //feed_content.setText();
             feed_author.setText(origin_title + " by " + author);
         }
