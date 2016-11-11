@@ -4,9 +4,15 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -259,6 +265,7 @@ public class FeedlyParser {
                     summary = getValue(item,"summary");
                     author = getValue(item,"author");
                     published = getValue(item,"published");
+                    unread = getValue(item,"unread");
 
                     JSONObject origin = null;
                     try {
@@ -270,7 +277,7 @@ public class FeedlyParser {
                     origin_title = getValue(origin,"title");
                     origin_htmlurl = getValue(origin,"htmlUrl");
 
-                    //TODO: fatan gets...flojera
+                    //TODO: faltan gets...flojera
 
                     Entry e = new Entry();
                     e.set_id(id);
@@ -304,8 +311,20 @@ public class FeedlyParser {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Flipelunico", "Error: " + error.getMessage());
-                Toast.makeText(mContext,
-                        error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                 if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                    Toast.makeText(mContext,
+                            "Error de coneccion a internet",
+                            Toast.LENGTH_LONG).show();
+                } else if (error instanceof AuthFailureError) {
+                    //TODO
+                } else if (error instanceof ServerError) {
+                    //TODO
+                } else if (error instanceof NetworkError) {
+                    //TODO
+                } else if (error instanceof ParseError) {
+                    //TODO
+                }
             }
         }) {
             @Override

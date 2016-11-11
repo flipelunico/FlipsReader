@@ -5,6 +5,7 @@ import android.text.Html.TagHandler;
 import android.text.Spannable;
 import android.text.style.BulletSpan;
 import android.text.style.LeadingMarginSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.TypefaceSpan;
 import android.util.Log;
 
@@ -65,9 +66,12 @@ public class CustomTagHandler implements TagHandler {
             output.append("\n");
             String[] split = output.toString().split("\n");
 
+
             int lastIndex = split.length - 1;
+            Log.i("Flipelunico","split: " + split[lastIndex]);
             int start = output.length() - split[lastIndex].length() - 1;
             output.setSpan(new BulletSpan(15 * mListParents.size()), start, output.length(), 0);
+            output.setSpan(new RelativeSizeSpan(0.8f), start, output.length(), 0);
         } else if (mListParents.lastElement().equals("ol")) {
             mListItemCount++;
 

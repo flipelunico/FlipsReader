@@ -107,7 +107,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
     public Cursor getENTRIES() {
         // Seleccionamos todas las filas de la tabla 'subscripciones'
         return getWritableDatabase().rawQuery(
-                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME, null);
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
     }
 
     /**
@@ -446,6 +446,21 @@ public class FeedlyDB extends SQLiteOpenHelper{
             );
         }
     }
+
+    private void deleteEntry(String id){
+
+        getWritableDatabase().delete(DBScripts.ENTRIES_TABLE_NAME,DBScripts.ColumnsSUBSCRIPTION.ID + "=?",
+                new String[]{id});
+        //getWritableDatabase().endTransaction();
+
+    }
+
+    public void deleteAllEntries(){
+
+        getWritableDatabase().delete(DBScripts.ENTRIES_TABLE_NAME,null,null);
+        //getWritableDatabase().endTransaction();
+
+    }
 	
 	/**
      * Procesa una lista de items para su almacenamiento local
@@ -475,7 +490,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         while (c.moveToNext()) {
 
-            id = c.getString(0);
+            id = c.getString(1);
 
 
             Entry match = entryMap.get(id);
@@ -483,6 +498,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
             if (match != null) {
                 // Si se encuentra la entrada la sacamos de memoria para luego no insertarla y que de duplicado
                 entryMap.remove(id);
+                deleteEntry(id);
             }
         }
         c.close();

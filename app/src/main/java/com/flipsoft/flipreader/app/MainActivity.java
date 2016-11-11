@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FeedlyDB.getInstance(this).deleteAllEntries();
+
         FeedlyParser.getInstance(this).get_categories();
         FeedlyParser.getInstance(this).get_entries();
 
