@@ -1,9 +1,11 @@
 package com.flipsoft.flipreader.app;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,22 +18,24 @@ import android.widget.TextView;
 
 import com.flipsoft.flipreader.app.DB.FeedlyDB;
 
-public class DesActivity extends Fragment{
+public class DesActivity extends FragmentActivity{
     private ViewPager mPager;
 
     private PagerAdapter mPagerAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_des, container, false);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_des);
+
+
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) view.findViewById(R.id.viewpagerContainer);
-        Cursor c = FeedlyDB.getInstance(getContext()).getENTRIES();
-        mPagerAdapter = new ViewPagerAdapter(getContext(),getFragmentManager(),c);
+        mPager = (ViewPager) findViewById(R.id.viewpagerContainer);
+        Cursor c = FeedlyDB.getInstance(getApplicationContext()).getENTRIES();
+        mPagerAdapter = new ViewPagerAdapter(getApplicationContext(),getSupportFragmentManager(),c);
         mPager.setAdapter(mPagerAdapter);
 
-        return view;
     }
 
 }

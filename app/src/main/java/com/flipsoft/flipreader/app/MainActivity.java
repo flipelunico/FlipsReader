@@ -14,6 +14,7 @@ import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -74,12 +75,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+        final Menu menu = navigationView.getMenu();
 
-        // SlidingPaneLayout customization
-        mPanes = (SlidingPaneLayout) findViewById(R.id.slidingPane);
-        mPanes.setParallaxDistance(PARALLAX_SIZE);
-        mPanes.setPanelSlideListener(this);
-        mPanes.openPane();
+
+        Cursor cur = FeedlyDB.getInstance(this).getCATEGORIES();
+        for(cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()){
+            String name = cur.getString(2);
+            menu.add(name);
+        }
 
 
 
@@ -89,23 +92,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.fr1) {
+        String iName = item.getTitle().toString();
+
+        if (iName.equals("Android")) {
             Cursor c = FeedlyDB.getInstance(this).getENTRIES();
             FeedCursorAdapter feedCA = new FeedCursorAdapter(this,c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             feedList.setAdapter(feedCA);
-            mPanes.openPane();
-        } else if (id == R.id.fr2) {
-
-        } else if (id == R.id.fr3) {
-
-        } else if (id == R.id.go) {
-            Intent intent = new Intent(this, DesActivity.class);
-            intent.putExtra("string", "Go to other Activity by NavigationView item cliked!");
-            startActivity(intent);
-        } else if (id == R.id.close) {
-            finish();
+          //TODO: launch activty
         }
 
         drawer.closeDrawer(GravityCompat.START);
@@ -114,14 +108,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //mCurrentTitle = mListItems[position];
-        closePane();
 
-        DesActivity newDesActivity = new DesActivity();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, newDesActivity);
-        transaction.addToBackStack(null);
-        transaction.commit();
+
+        Intent intent = new Intent(this, DesActivity.class);
+        intent.putExtra("string", "Go to other Activity by NavigationView item cliked!");
+        startActivity(intent);
+        overridePendingTransition(R.anim.trans_left_in, R.anim.trans_left_out);
 
     }
 

@@ -3,7 +3,7 @@
     <item
         android:id="@+id/fr1"
         android:icon="@android:drawable/ic_menu_camera"
-        android:title="Fragment 1" />
+        android:title="Android" />
 
     <item
         android:id="@+id/fr2"

@@ -25,25 +25,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.flipsoft.flipreader.app.PagerEnabledSlidingPanelLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/slidingPane"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+
 
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/feedList"
-                    android:choiceMode="singleChoice"
-                    />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/fragmentContainer"/>
-
-            </com.flipsoft.flipreader.app.PagerEnabledSlidingPanelLayout>
+                    android:choiceMode="singleChoice" />
         </LinearLayout>
 
 
@@ -52,8 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:menu="@menu/drawer_menu" />
+            android:fitsSystemWindows="true" />
 
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>
