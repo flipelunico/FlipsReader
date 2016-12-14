@@ -37,10 +37,10 @@ public class FeedlyParser {
 
         private String CATEGORIES_URL = "http://cloud.feedly.com/v3/categories";
         private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
-		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android";
+		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android&count=5";
         private String Token = "OAuth A1dTZrLPu-9ewUD2aA-y8aFN63JkzMmyS5F50EE1Yw7uFD1QZMwOrTabzDV8Td88lKVhpJcJ4fKkC5URvEXOUIkRIfbNu58ATXi5645sUhv2mJ7JZEJTnQB7CWNe1Z-LViL7LDoiy3veVh_J-kdy_wWv_7gSCD1WWMHw6miFt4e0GEC3re6s7s6OxqwtBHq2wh7VBJOiUhwDzG0aV4xfvX9LvNUs:feedlydev";
         private Context mContext;
-
+        private String mContinuation;
         /*
         Instancia singleton
         */
@@ -48,6 +48,10 @@ public class FeedlyParser {
 
         public FeedlyParser(Context context){
                 this.mContext = context;
+        }
+
+        public  FeedlyParser(){
+            this.listener = null;
         }
 
         /**
@@ -62,7 +66,22 @@ public class FeedlyParser {
             return singleton;
         }
 
-        public void get_categories(){
+        public interface ParserListener {
+
+             public void onParserReady(String continuation);
+
+        }
+
+        private ParserListener listener;
+
+        public void setCustomParserListener(ParserListener listener) {
+            this.listener = listener;
+        }
+
+    /**
+     * Obtiene categorias desde la cuenta de feedly
+      */
+    public void get_categories(){
 
             final List<Category> categories = new ArrayList<>();
 
@@ -209,10 +228,24 @@ public class FeedlyParser {
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
     }
-         
-		public void get_entries(){
-            Log.d("Flipelunico", "Obteniendo entradas");
+
+
+
+    /**
+     *  Obtiene feeds desde feedly
+      */
+    public void get_entries(){
+        String result = getEntriesRecall("");
+        //while (result != ""){
+        //    result = getEntriesRecall(result);
+        //}
+
+    }
+    private String getEntriesRecall(final String continuation){
+
         final List<Entry> entries = new ArrayList<>();
+
+        mContinuation = continuation;
 
         JsonObjectRequest jsonArrReq = new JsonObjectRequest(Request.Method.GET,
                 ENTRIES_URL, null, new Response.Listener<JSONObject>() {
@@ -241,6 +274,8 @@ public class FeedlyParser {
 
                 id = getValue(response,"id");
                 updated =getValue(response,"updated");
+                mContinuation = getValue(response,"continuation");
+                //Log.i("Flipelunico","responseCont: " + mContinuation);
 
                 JSONArray items = null;
 
@@ -297,6 +332,10 @@ public class FeedlyParser {
                     e.set_visual_width(visual_width);
                     e.set_unread(unread);
 
+                    if (z == items.length() -1){
+                        e.set_continuation(mContinuation);
+                        //Log.i("Flipelunico","Cont2: " + mContinuation);
+                    }
                     entries.add(e);
                 }
 
@@ -305,6 +344,12 @@ public class FeedlyParser {
                 //hidepDialog();
 
                 Log.d("Flipelunico", "Obteniendo entradas fin");
+
+                if (listener != null){
+                    listener.onParserReady(mContinuation);
+                }
+
+
             }
         }, new Response.ErrorListener() {
 
@@ -329,8 +374,10 @@ public class FeedlyParser {
         }) {
             @Override
             public Map<String, String> getHeaders() {
+                //TODO: Agregar continuation para realizar rellamada
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Authorization", Token);
+                headers.put("continuation", mContinuation);
                 return headers;
             }
         };
@@ -339,6 +386,8 @@ public class FeedlyParser {
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         //requestQueue.add(stringRequest);
         requestQueue.add(jsonArrReq);
+        Log.i("Flipelunico","Cont: " + mContinuation);
+        return mContinuation;
     }
 
         private String getValue(JSONObject object,String name) {

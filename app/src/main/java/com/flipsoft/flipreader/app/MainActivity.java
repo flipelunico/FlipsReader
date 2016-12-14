@@ -14,6 +14,7 @@ import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,6 +58,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FeedlyDB.getInstance(this).deleteAllEntries();
 
         FeedlyParser.getInstance(this).get_categories();
+
+        FeedlyParser.getInstance(this).setCustomParserListener(new FeedlyParser.ParserListener() {
+            @Override
+            public void onParserReady(String continuation) {
+                Log.i("Flipelunico","Evento ya termino parseo: " + continuation);
+            }
+        });
+
         FeedlyParser.getInstance(this).get_entries();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

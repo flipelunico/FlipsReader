@@ -22,6 +22,17 @@ public class Entry {
 	private String visual_height;
 	private String visual_width;
 	private String unread;
+    private String continuation;
+
+    public String get_continuation()
+    {
+        return continuation;
+    }
+
+    public void set_continuation(String value)
+    {
+        continuation = value;
+    }
 	
     public String get_id()
     {

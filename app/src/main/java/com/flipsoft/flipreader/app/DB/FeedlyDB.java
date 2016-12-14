@@ -14,6 +14,7 @@ import com.flipsoft.flipreader.app.Parser.Subscription;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Flipelunico on 11-10-16.
@@ -479,8 +480,10 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         /*Obtener las entradas locales*/
 
-        Cursor c = getENTRIES();
-        assert c != null;
+        Cursor c = getWritableDatabase().rawQuery(
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
+        //assert c != null;
+        int filas = c.getCount();
 
 
         /*
@@ -507,7 +510,8 @@ public class FeedlyDB extends SQLiteOpenHelper{
         /*
         #4 Añadir entradas nuevas
         */
-        for (Entry su : entries) {
+        for (Map.Entry<String, Entry> str : entryMap.entrySet()) {
+            Entry su = str.getValue();
 
             insertENTRY(
                     su.get_id(),
@@ -528,5 +532,8 @@ public class FeedlyDB extends SQLiteOpenHelper{
                     su.get_unread()
             );
         }
+
+        Cursor c2 = getWritableDatabase().rawQuery(
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
     }
 }
