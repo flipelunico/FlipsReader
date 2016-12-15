@@ -40,7 +40,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
     /*
     Versión actual de la base de datos
      */
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
 
     private FeedlyDB(Context context) {
@@ -67,6 +67,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
         db.execSQL(DBScripts.CREATE_SUBSCRIPTIONS);
         // Crear la tabla 'SUBSCRIPTIONS'
         db.execSQL(DBScripts.CREATE_ENTRIES);
+        Log.i("Flipelunico","CREATING TABLES...");
     }
 
     @Override
@@ -75,6 +76,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.CATEGORY_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.SUBSCRIPTIONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + DBScripts.ENTRIES_TABLE_NAME);
+        Log.i("Flipelunico","DROPING TABLES...");
         onCreate(db);
     }
 
@@ -105,10 +107,13 @@ public class FeedlyDB extends SQLiteOpenHelper{
      *
      * @return cursor con los registros
      */
-    public Cursor getENTRIES() {
+    public Cursor getENTRIES(String Category) {
         // Seleccionamos todas las filas de la tabla 'subscripciones'
+        //TODO; optimize
+        String query = "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " where ID like '/" + Category + "' order by published desc";
+        Log.i("Flipelunico","Query ejecutada: " + query);
         return getWritableDatabase().rawQuery(
-                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " where ID like '%/" + Category + "' order by published desc", null);
     }
 
     /**
@@ -214,10 +219,15 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         try{
             // Insertando el registro en la base de datos
+            //getWritableDatabase().beginTransaction();
             getWritableDatabase().insertOrThrow(
-                    DBScripts.ENTRIES_TABLE_NAME,null, values
-            );
+                    DBScripts.ENTRIES_TABLE_NAME,null, values);
+            //getWritableDatabase().setTransactionSuccessful();
+            //getWritableDatabase().endTransaction();
+
         } catch (SQLiteConstraintException e){
+
+         //   Log.i("Flipelunico","Error al hacer el insert.");
 
         }
     }
@@ -475,16 +485,22 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         HashMap<String, Entry> entryMap = new HashMap<>();
         for (Entry s : entries) {
-            entryMap.put(s.get_id(), s);
+            if (s.get_unread() == "true") {
+                entryMap.put(s.get_id(), s);
+            }else{
+                deleteEntry(s.get_id());
+            }
         }
 
         /*Obtener las entradas locales*/
 
         Cursor c = getWritableDatabase().rawQuery(
-                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
+                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME, null);
         //assert c != null;
+        //c.moveToFirst();
         int filas = c.getCount();
-
+        Log.i("Flipelunico","FeedlyDB numero de entries: " +  filas);
+        //String data = c.getString(1);
 
         /*
         #3  Comenzar a comparar las subscripciones
@@ -500,8 +516,11 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
             if (match != null) {
                 // Si se encuentra la entrada la sacamos de memoria para luego no insertarla y que de duplicado
+                //Entry temp = entryMap.get(id);
+                //if (temp.get_unread() == "false"){
                 entryMap.remove(id);
-                deleteEntry(id);
+                //    deleteEntry(id);
+                //}
             }
         }
         c.close();
@@ -535,5 +554,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
 
         Cursor c2 = getWritableDatabase().rawQuery(
                 "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " order by published desc", null);
+        int numero = c2.getCount();
+        Log.i("Flipelunico","Despues de cargar todo el numero de entries es : "+ numero);
     }
 }

@@ -99,6 +99,8 @@ public class FeedCursorAdapter extends CursorAdapter {
         String v15 = cursor.getString(15);
         String v16 = cursor.getString(16);
 
+        Log.i("Flipelunico","bindview autor es : "+ v5);
+
         //TODO: sacar esto el error es de la bd
         if (v8.length() == 0){
             v8 = "1111111111111";

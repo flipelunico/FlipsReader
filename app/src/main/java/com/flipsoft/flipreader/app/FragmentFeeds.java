@@ -28,9 +28,9 @@ public class FragmentFeeds extends ListFragment {
         View rootView = inflater.inflate(R.layout.fragment_article, container,
                 false);
 
-        Cursor c = FeedlyDB.getInstance(getContext()).getENTRIES();
-        FeedCursorAdapter Fc = new FeedCursorAdapter(getContext(),c, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        setListAdapter(Fc);
+        //Cursor c = FeedlyDB.getInstance(getContext()).getENTRIES();
+        //FeedCursorAdapter Fc = new FeedCursorAdapter(getContext(),c, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        //setListAdapter(Fc);
 
 
 

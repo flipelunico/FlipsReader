@@ -32,9 +32,10 @@ public class DesActivity extends FragmentActivity{
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.viewpagerContainer);
-        Cursor c = FeedlyDB.getInstance(getApplicationContext()).getENTRIES();
-        mPagerAdapter = new ViewPagerAdapter(getApplicationContext(),getSupportFragmentManager(),c);
-        mPager.setAdapter(mPagerAdapter);
+        //TODO; arreglar esto
+        //Cursor c = FeedlyDB.getInstance(getApplicationContext()).getENTRIES();
+        //mPagerAdapter = new ViewPagerAdapter(getApplicationContext(),getSupportFragmentManager(),c);
+        //mPager.setAdapter(mPagerAdapter);
 
     }
 

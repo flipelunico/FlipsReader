@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FeedlyDB.getInstance(this).deleteAllEntries();
+        //FeedlyDB.getInstance(this).deleteAllEntries();
 
         FeedlyParser.getInstance(this).get_categories();
 
@@ -66,7 +66,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        FeedlyParser.getInstance(this).get_entries();
+        Cursor cCat = FeedlyDB.getInstance(this).getCATEGORIES();
+        while (cCat.moveToNext()) {
+            FeedlyParser.getInstance(this).get_entries(cCat.getString(1));
+        }
+        cCat.close();
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -104,12 +110,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         String iName = item.getTitle().toString();
 
-        if (iName.equals("Android")) {
-            Cursor c = FeedlyDB.getInstance(this).getENTRIES();
+        //if (iName.equals("Android")) {
+            Cursor c = FeedlyDB.getInstance(this).getENTRIES(iName);
+            int numero = c.getCount();
+            Log.i("Flipelunico","Navigation Item Selected, numero de entries: "+ numero);
             FeedCursorAdapter feedCA = new FeedCursorAdapter(this,c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
             feedList.setAdapter(feedCA);
           //TODO: launch activty
-        }
+        //}
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
