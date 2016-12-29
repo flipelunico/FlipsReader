@@ -37,7 +37,7 @@ public class FeedlyParser {
 
         private String CATEGORIES_URL = "http://cloud.feedly.com/v3/categories";
         private String SUBSCRIPTIONS_URL = "http://cloud.feedly.com/v3/subscriptions";
-		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android&count=1000";
+		private String ENTRIES_URL = "http://cloud.feedly.com/v3/streams/contents?streamId=user/45572cdc-c7de-425f-bc9a-11e08b224fab/category/Android&count=100";
         private String Token = "OAuth A1dTZrLPu-9ewUD2aA-y8aFN63JkzMmyS5F50EE1Yw7uFD1QZMwOrTabzDV8Td88lKVhpJcJ4fKkC5URvEXOUIkRIfbNu58ATXi5645sUhv2mJ7JZEJTnQB7CWNe1Z-LViL7LDoiy3veVh_J-kdy_wWv_7gSCD1WWMHw6miFt4e0GEC3re6s7s6OxqwtBHq2wh7VBJOiUhwDzG0aV4xfvX9LvNUs:feedlydev";
         private Context mContext;
         private String mContinuation;
