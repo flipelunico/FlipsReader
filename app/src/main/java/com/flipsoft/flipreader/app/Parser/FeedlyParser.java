@@ -81,8 +81,8 @@ public class FeedlyParser {
     /**
      * Obtiene categorias desde la cuenta de feedly
       */
-    public void get_categories(){
-
+        public void get_categories(){
+            Log.d("Flipelunico", "get_categories");
             final List<Category> categories = new ArrayList<>();
 
             JsonArrayRequest jsonArrReq = new JsonArrayRequest(Request.Method.GET,
@@ -241,7 +241,7 @@ public class FeedlyParser {
         //}
 
     }*/
-    public void get_entries(String category){
+    public void get_entries(final String category){
 
         final List<Entry> entries = new ArrayList<>();
 
@@ -272,6 +272,7 @@ public class FeedlyParser {
                 String visual_height = "";
                 String visual_width = "";
                 String unread = "";
+                String categoryId = "";
 
 
                 id = getValue(response,"id");
@@ -308,11 +309,22 @@ public class FeedlyParser {
                     try {
                         origin = item.getJSONObject("origin");
                     } catch (JSONException e){
-                        //
+                        Log.i("Flipelunico","error obtener objeto origin");
                     }
 
                     origin_title = getValue(origin,"title");
                     origin_htmlurl = getValue(origin,"htmlUrl");
+
+
+                    JSONArray categories = null;
+                    try {
+                        categories = item.getJSONArray("categories");
+                    } catch (JSONException e){
+                        Log.i("Flipelunico","error obtener objeto categories");
+                    }
+
+                    categoryId = getValue2(categories,"id");
+                    Log.i("Flipelunico","categoryId: " + categoryId);
 
                     //TODO: faltan gets...flojera
 
@@ -333,6 +345,7 @@ public class FeedlyParser {
                     e.set_visual_height(visual_height);
                     e.set_visual_width(visual_width);
                     e.set_unread(unread);
+                    e.set_categoryId(categoryId);
 
                     if (z == items.length() -1){
                         e.set_continuation(mContinuation);
@@ -392,14 +405,31 @@ public class FeedlyParser {
         //return mContinuation;
     }
 
-        private String getValue(JSONObject object,String name) {
-        String resp;
-        try {
-            resp = object.getString(name);
-        } catch (JSONException e){
-            resp = "";
-        }
-        return resp;
+        private String getValue(JSONObject object,String name)
+        {
+            String resp;
+            try {
+                resp = object.getString(name);
+            } catch (JSONException e){
+                resp = "";
+            }
+            return resp;
 
-    }
+        }
+
+        private String getValue2(JSONArray object,String name)
+        {
+            String resp;
+
+            JSONObject object2 = null;
+            try {
+                object2 = object.getJSONObject(0);
+                resp = object2.getString(name);
+            } catch (JSONException e){
+                resp = "";
+            }
+
+            return resp;
+
+        }
 }

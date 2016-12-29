@@ -40,7 +40,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
     /*
     Versión actual de la base de datos
      */
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
 
     private FeedlyDB(Context context) {
@@ -110,10 +110,13 @@ public class FeedlyDB extends SQLiteOpenHelper{
     public Cursor getENTRIES(String Category) {
         // Seleccionamos todas las filas de la tabla 'subscripciones'
         //TODO; optimize
-        String query = "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " where ID like '/" + Category + "' order by published desc";
+        String query = "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " where CATEGORY_ID like '%/" + Category + "' order by published desc";
         Log.i("Flipelunico","Query ejecutada: " + query);
-        return getWritableDatabase().rawQuery(
-                "select rowid _id, * from " + DBScripts.ENTRIES_TABLE_NAME + " where ID like '%/" + Category + "' order by published desc", null);
+        String query2 = "select count(*) from entries";
+        Cursor cursor2 = getWritableDatabase().rawQuery(query, null);
+        cursor2.moveToFirst();
+        Log.i("Flipelunico","Query2 ejecutada: " +  cursor2.getString(0));
+        return getWritableDatabase().rawQuery(query, null);
     }
 
     /**
@@ -196,7 +199,8 @@ public class FeedlyDB extends SQLiteOpenHelper{
             String visual_url,
             String visual_height,
             String visual_width,
-            String unread){
+            String unread,
+            String category_id){
 
         ContentValues values = new ContentValues();
         values.put(DBScripts.ColumnsENTRIES.ID, id);
@@ -215,7 +219,7 @@ public class FeedlyDB extends SQLiteOpenHelper{
         values.put(DBScripts.ColumnsENTRIES.VISUAL_HEIGHT, visual_height);
         values.put(DBScripts.ColumnsENTRIES.VISUAL_WIDTH, visual_width);
         values.put(DBScripts.ColumnsENTRIES.UNREAD, unread);
-
+        values.put(DBScripts.ColumnsENTRIES.CATEGORY_ID,category_id);
 
         try{
             // Insertando el registro en la base de datos
@@ -548,7 +552,8 @@ public class FeedlyDB extends SQLiteOpenHelper{
                     su.get_visual_url(),
                     su.get_visual_height(),
                     su.get_visual_width(),
-                    su.get_unread()
+                    su.get_unread(),
+                    su.get_categoryId()
             );
         }
 

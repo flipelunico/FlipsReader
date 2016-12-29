@@ -82,6 +82,7 @@ public static final String INT_TYPE = "INTEGER";
 		public static final String VISUAL_HEIGHT = "VISUAL_HEIGHT";
 		public static final String VISUAL_WIDTH = "VISUAL_WIDTH";
 		public static final String UNREAD = "UNREAD";
+        public static final String CATEGORY_ID = "CATEGORY_ID";
 	
     }
 
@@ -103,7 +104,8 @@ public static final String INT_TYPE = "INTEGER";
 					ColumnsENTRIES.VISUAL_URL + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_HEIGHT + " " + STRING_TYPE  + "," +
 					ColumnsENTRIES.VISUAL_WIDTH + " " + STRING_TYPE  + "," +
-					ColumnsENTRIES.UNREAD + " " + STRING_TYPE  +")";
+					ColumnsENTRIES.UNREAD + " " + STRING_TYPE  + "," +
+                    ColumnsENTRIES.CATEGORY_ID + " " + STRING_TYPE  +")";
 
 
 

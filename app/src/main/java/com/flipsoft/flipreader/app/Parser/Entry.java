@@ -22,6 +22,7 @@ public class Entry {
 	private String visual_height;
 	private String visual_width;
 	private String unread;
+    private String categoryId;
     private String continuation;
 
     public String get_continuation()
@@ -192,6 +193,16 @@ public class Entry {
     public void set_unread(String value)
     {
         this.unread = value;
+    }
+
+    public String get_categoryId()
+    {
+        return categoryId;
+    }
+
+    public void set_categoryId(String value)
+    {
+        this.categoryId = value;
     }
 
 
